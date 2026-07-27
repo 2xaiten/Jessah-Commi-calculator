@@ -1,50 +1,50 @@
-// Google Apps Script Web App URL mo[cite: 2]
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbz8VVpaOIYLJnmYSSWeejZWuORPWvKUh1PjmLIS1eUe9iRRmouNdjbpLHNdAMklPo94/exec';[cite: 2]
+// Google Apps Script Web App URL mo
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbz8VVpaOIYLJnmYSSWeejZWuORPWvKUh1PjmLIS1eUe9iRRmouNdjbpLHNdAMklPo94/exec';
 
-let servicesData = [];[cite: 2]
-let activeItems = [];[cite: 2]
-let historyLogs = JSON.parse(localStorage.getItem('jessah_history_logs')) || [];[cite: 2]
-let isHistoryFolded = false;[cite: 2]
+let servicesData = [];
+let activeItems = [];
+let historyLogs = JSON.parse(localStorage.getItem('jessah_history_logs')) || [];
+let isHistoryFolded = false;
 
-// Official Branding Footer HTML[cite: 2]
+// Official Branding Footer HTML
 const brandingFooterHTML = `
     <div style="text-align: center; margin-top: 15px; padding-top: 8px; border-top: 1px dashed rgba(255,77,136,0.4); font-size: 11px; font-weight: 800; color: #ffb6c1; letter-spacing: 1px;">
         Powered by : 2xaiten
     </div>
-`;[cite: 2]
+`;
 
-// Web Audio API Click Sound[cite: 2]
-function playClickSound() {[cite: 2]
-    try {[cite: 2]
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();[cite: 2]
-        const osc = audioCtx.createOscillator();[cite: 2]
-        const gain = audioCtx.createGain();[cite: 2]
+// Web Audio API Click Sound
+function playClickSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
         
-        osc.type = 'sine';[cite: 2]
-        osc.frequency.setValueAtTime(450, audioCtx.currentTime);[cite: 2]
-        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.04);[cite: 2]
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.04);
         
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);[cite: 2]
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);[cite: 2]
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
         
-        osc.connect(gain);[cite: 2]
-        gain.connect(audioCtx.destination);[cite: 2]
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
         
-        osc.start();[cite: 2]
-        osc.stop(audioCtx.currentTime + 0.04);[cite: 2]
-    } catch (e) {}[cite: 2]
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+    } catch (e) {}
 }
 
-async function initApp() {[cite: 2]
-    await fetchServicesFromSheet();[cite: 2]
-    renderReceipt();[cite: 2]
-    renderAggregatedSummary();[cite: 2]
-    renderHistoryLogs();[cite: 2]
+async function initApp() {
+    await fetchServicesFromSheet();
+    renderReceipt();
+    renderAggregatedSummary();
+    renderHistoryLogs();
 }
 
-async function fetchServicesFromSheet() {[cite: 2]
-    const container = document.getElementById('servicesListContainer');[cite: 2]
-    if (!container) return;[cite: 2]
+async function fetchServicesFromSheet() {
+    const container = document.getElementById('servicesListContainer');
+    if (!container) return;
 
     container.innerHTML = `
         <div class="loading-container">
@@ -53,42 +53,42 @@ async function fetchServicesFromSheet() {[cite: 2]
             </div>
             <div class="loading-text">loading data from Jessah Database... ✨</div>
         </div>
-    `;[cite: 2]
+    `;
 
-    try {[cite: 2]
-        const response = await fetch(SHEET_API_URL);[cite: 2]
-        const data = await response.json();[cite: 2]
+    try {
+        const response = await fetch(SHEET_API_URL);
+        const data = await response.json();
         
-        servicesData = data.map(item => ({[cite: 2]
-            category: item.category ? `${item.category} Category` : 'General',[cite: 2]
-            name: item.itemName,[cite: 2]
-            price: parseFloat(item.price) || 0,[cite: 2]
-            bracket: `Bracket ${item.rate}`,[cite: 2]
-            commission: parseFloat(item.rate) || 0[cite: 2]
-        })).filter(item => item.name);[cite: 2]
+        servicesData = data.map(item => ({
+            category: item.category ? `${item.category} Category` : 'General',
+            name: item.itemName,
+            price: parseFloat(item.price) || 0,
+            bracket: `Bracket ${item.rate}`,
+            commission: parseFloat(item.rate) || 0
+        })).filter(item => item.name);
 
-        renderServices();[cite: 2]
-    } catch (error) {[cite: 2]
-        container.innerHTML = `<div class="empty-log">Failed to load services from Database.</div>`;[cite: 2]
+        renderServices();
+    } catch (error) {
+        container.innerHTML = `<div class="empty-log">Failed to load services from Database.</div>`;
     }
 }
 
-function renderServices() {[cite: 2]
-    const container = document.getElementById('servicesListContainer');[cite: 2]
-    if (!container) return;[cite: 2]
+function renderServices() {
+    const container = document.getElementById('servicesListContainer');
+    if (!container) return;
     
-    if (servicesData.length === 0) {[cite: 2]
-        container.innerHTML = `<div class="empty-log">No services found.</div>`;[cite: 2]
-        return;[cite: 2]
+    if (servicesData.length === 0) {
+        container.innerHTML = `<div class="empty-log">No services found.</div>`;
+        return;
     }
 
-    let html = '';[cite: 2]
-    let currentCat = '';[cite: 2]
+    let html = '';
+    let currentCat = '';
     
-    servicesData.forEach((service, index) => {[cite: 2]
-        if (service.category !== currentCat) {[cite: 2]
-            currentCat = service.category;[cite: 2]
-            html += `<div class="category-title">${currentCat}</div>`;[cite: 2]
+    servicesData.forEach((service, index) => {
+        if (service.category !== currentCat) {
+            currentCat = service.category;
+            html += `<div class="category-title">${currentCat}</div>`;
         }
         html += `
             <div class="service-row" onclick="playClickSound(); addService(${index})">
@@ -98,79 +98,79 @@ function renderServices() {[cite: 2]
                 </div>
                 <div class="service-price">₱${service.price}</div>
             </div>
-        `;[cite: 2]
+        `;
     });
-    container.innerHTML = html;[cite: 2]
+    container.innerHTML = html;
 }
 
-function addService(index) {[cite: 2]
-    const service = servicesData[index];[cite: 2]
-    const existing = activeItems.find(item => item.name === service.name);[cite: 2]
-    if (existing) {[cite: 2]
-        existing.qty += 1;[cite: 2]
-    } else {[cite: 2]
-        activeItems.push({[cite: 2]
-            name: service.name,[cite: 2]
-            price: service.price,[cite: 2]
-            commission: service.commission,[cite: 2]
-            bracket: service.bracket,[cite: 2]
-            qty: 1,[cite: 2]
-            isCustom: false[cite: 2]
-        });[cite: 2]
+function addService(index) {
+    const service = servicesData[index];
+    const existing = activeItems.find(item => item.name === service.name);
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        activeItems.push({
+            name: service.name,
+            price: service.price,
+            commission: service.commission,
+            bracket: service.bracket,
+            qty: 1,
+            isCustom: false
+        });
     }
-    showToast(`Added: ${service.name}`);[cite: 2]
-    updateAll();[cite: 2]
+    showToast(`Added: ${service.name}`);
+    updateAll();
 }
 
-function addCustomService() {[cite: 2]
-    playClickSound();[cite: 2]
-    const priceInput = document.getElementById('customPriceInput');[cite: 2]
-    const price = parseFloat(priceInput.value);[cite: 2]
-    if (isNaN(price) || price <= 0) {[cite: 2]
-        showToast('Please enter a valid custom price!');[cite: 2]
-        return;[cite: 2]
+function addCustomService() {
+    playClickSound();
+    const priceInput = document.getElementById('customPriceInput');
+    const price = parseFloat(priceInput.value);
+    if (isNaN(price) || price <= 0) {
+        showToast('Please enter a valid custom price!');
+        return;
     }
     
-    activeItems.push({[cite: 2]
-        name: 'Custom Add-On',[cite: 2]
-        price: price,[cite: 2]
-        commission: 0.10,[cite: 2]
-        bracket: '10% Comm.',[cite: 2]
-        qty: 1,[cite: 2]
-        isCustom: true[cite: 2]
-    });[cite: 2]
+    activeItems.push({
+        name: 'Custom Add-On',
+        price: price,
+        commission: 0.10,
+        bracket: '10% Comm.',
+        qty: 1,
+        isCustom: true
+    });
     
-    priceInput.value = '';[cite: 2]
-    showToast('Custom Add-On Added!');[cite: 2]
-    updateAll();[cite: 2]
+    priceInput.value = '';
+    showToast('Custom Add-On Added!');
+    updateAll();
 }
 
-function changeQty(index, delta) {[cite: 2]
-    playClickSound();[cite: 2]
-    activeItems[index].qty += delta;[cite: 2]
-    if (activeItems[index].qty <= 0) {[cite: 2]
-        activeItems.splice(index, 1);[cite: 2]
+function changeQty(index, delta) {
+    playClickSound();
+    activeItems[index].qty += delta;
+    if (activeItems[index].qty <= 0) {
+        activeItems.splice(index, 1);
     }
-    updateAll();[cite: 2]
+    updateAll();
 }
 
-function removeItem(index) {[cite: 2]
-    playClickSound();[cite: 2]
-    activeItems.splice(index, 1);[cite: 2]
-    updateAll();[cite: 2]
+function removeItem(index) {
+    playClickSound();
+    activeItems.splice(index, 1);
+    updateAll();
 }
 
-function updateAll() {[cite: 2]
-    renderReceipt();[cite: 2]
-    renderAggregatedSummary();[cite: 2]
-    renderHistoryLogs();[cite: 2]
+function updateAll() {
+    renderReceipt();
+    renderAggregatedSummary();
+    renderHistoryLogs();
 }
 
-function renderReceipt() {[cite: 2]
-    const container = document.getElementById('activeReceiptContainer');[cite: 2]
-    if (!container) return;[cite: 2]
+function renderReceipt() {
+    const container = document.getElementById('activeReceiptContainer');
+    if (!container) return;
 
-    if (activeItems.length === 0) {[cite: 2]
+    if (activeItems.length === 0) {
         container.innerHTML = `
             <div class="receipt-box" style="text-align: center; opacity: 0.7;">
                 <div class="receipt-header" style="border:none; margin:0; padding-bottom:0;">
@@ -178,21 +178,21 @@ function renderReceipt() {[cite: 2]
                     <p style="font-size: 11px; margin-top: 4px;">Click services above to start calculating commission.</p>
                 </div>
             </div>
-        `;[cite: 2]
-        return;[cite: 2]
+        `;
+        return;
     }
 
-    let totalComm = 0;[cite: 2]
-    let bracketSubtotals = {};[cite: 2]
+    let totalComm = 0;
+    let bracketSubtotals = {};
 
-    let itemsHtml = activeItems.map((item, index) => {[cite: 2]
-        let itemTotalComm = item.price * item.commission * item.qty;[cite: 2]
-        totalComm += itemTotalComm;[cite: 2]
+    let itemsHtml = activeItems.map((item, index) => {
+        let itemTotalComm = item.price * item.commission * item.qty;
+        totalComm += itemTotalComm;
 
-        if (!bracketSubtotals[item.bracket]) {[cite: 2]
-            bracketSubtotals[item.bracket] = 0;[cite: 2]
+        if (!bracketSubtotals[item.bracket]) {
+            bracketSubtotals[item.bracket] = 0;
         }
-        bracketSubtotals[item.bracket] += itemTotalComm;[cite: 2]
+        bracketSubtotals[item.bracket] += itemTotalComm;
 
         return `
             <div class="receipt-item-row">
@@ -210,21 +210,21 @@ function renderReceipt() {[cite: 2]
                     </div>
                 </div>
             </div>
-        `;[cite: 2]
-    }).join('');[cite: 2]
+        `;
+    }).join('');
 
     let bracketsHtml = Object.keys(bracketSubtotals).map(bracket => `
         <div style="display: flex; justify-content: space-between; font-size: 13px; color: #ffb6c1; margin: 4px 0; font-weight: 600;">
             <span>Subtotal (${bracket}):</span>
             <span>₱${bracketSubtotals[bracket].toFixed(2)}</span>
         </div>
-    `).join('');[cite: 2]
+    `).join('');
 
-    const now = new Date();[cite: 2]
-    const currentDateStr = now.toLocaleString('en-US', {[cite: 2]
-        month: 'numeric', day: 'numeric', year: 'numeric',[cite: 2]
-        hour: 'numeric', minute: 'numeric', hour12: true[cite: 2]
-    });[cite: 2]
+    const now = new Date();
+    const currentDateStr = now.toLocaleString('en-US', { 
+        month: 'numeric', day: 'numeric', year: 'numeric', 
+        hour: 'numeric', minute: 'numeric', hour12: true 
+    });
 
     container.innerHTML = `
         <div class="receipt-box" id="activeReceiptBoxContent">
@@ -248,40 +248,40 @@ function renderReceipt() {[cite: 2]
             </div>
             ${brandingFooterHTML}
         </div>
-    `;[cite: 2]
+    `;
 }
 
-function saveCurrentLog() {[cite: 2]
-    if (activeItems.length === 0) return;[cite: 2]
-    const techName = document.getElementById('techNameInput')?.value || 'JESSAH';[cite: 2]
+function saveCurrentLog() {
+    if (activeItems.length === 0) return;
+    const techName = document.getElementById('techNameInput')?.value || 'JESSAH';
     
-    const now = new Date();[cite: 2]
-    const timestamp = now.toLocaleString('en-US', {[cite: 2]
-        month: 'numeric', day: 'numeric', year: 'numeric',[cite: 2]
-        hour: 'numeric', minute: 'numeric', hour12: true[cite: 2]
-    });[cite: 2]
+    const now = new Date();
+    const timestamp = now.toLocaleString('en-US', { 
+        month: 'numeric', day: 'numeric', year: 'numeric', 
+        hour: 'numeric', minute: 'numeric', hour12: true 
+    });
 
-    let totalComm = activeItems.reduce((sum, item) => sum + (item.price * item.commission * item.qty), 0);[cite: 2]
+    let totalComm = activeItems.reduce((sum, item) => sum + (item.price * item.commission * item.qty), 0);
     
-    historyLogs.push({[cite: 2]
-        date: timestamp,[cite: 2]
-        tech: techName,[cite: 2]
-        items: [...activeItems],[cite: 2]
-        total: totalComm[cite: 2]
-    });[cite: 2]
+    historyLogs.push({
+        date: timestamp,
+        tech: techName,
+        items: [...activeItems],
+        total: totalComm
+    });
 
-    localStorage.setItem('jessah_history_logs', JSON.stringify(historyLogs));[cite: 2]
+    localStorage.setItem('jessah_history_logs', JSON.stringify(historyLogs));
 
-    activeItems = [];[cite: 2]
-    showToast('Log saved successfully!');[cite: 2]
-    updateAll();[cite: 2]
+    activeItems = [];
+    showToast('Log saved successfully!');
+    updateAll();
 }
 
-function renderAggregatedSummary() {[cite: 2]
-    const container = document.getElementById('aggregatedSummaryBox');[cite: 2]
-    if (!container) return;[cite: 2]
+function renderAggregatedSummary() {
+    const container = document.getElementById('aggregatedSummaryBox');
+    if (!container) return;
 
-    if (historyLogs.length === 0) {[cite: 2]
+    if (historyLogs.length === 0) {
         container.innerHTML = `
             <div class="receipt-box" style="text-align: center; opacity: 0.7;">
                 <div class="receipt-header" style="border:none; margin:0; padding-bottom:0;">
@@ -289,36 +289,36 @@ function renderAggregatedSummary() {[cite: 2]
                     <p style="font-size: 11px; margin-top: 4px;">No saved logs to summarize yet.</p>
                 </div>
             </div>
-        `;[cite: 2]
-        return;[cite: 2]
+        `;
+        return;
     }
 
-    let aggregatedItemsMap = {};[cite: 2]
-    let bracketSubtotals = {};[cite: 2]
-    let grandTotal = 0;[cite: 2]
+    let aggregatedItemsMap = {};
+    let bracketSubtotals = {};
+    let grandTotal = 0;
 
-    historyLogs.forEach(log => {[cite: 2]
-        log.items.forEach(item => {[cite: 2]
-            if (!aggregatedItemsMap[item.name]) {[cite: 2]
-                aggregatedItemsMap[item.name] = {[cite: 2]
-                    name: item.name,[cite: 2]
-                    price: item.price,[cite: 2]
-                    bracket: item.bracket,[cite: 2]
-                    commission: item.commission,[cite: 2]
-                    qty: 0,[cite: 2]
-                    totalComm: 0[cite: 2]
-                };[cite: 2]
+    historyLogs.forEach(log => {
+        log.items.forEach(item => {
+            if (!aggregatedItemsMap[item.name]) {
+                aggregatedItemsMap[item.name] = {
+                    name: item.name,
+                    price: item.price,
+                    bracket: item.bracket,
+                    commission: item.commission,
+                    qty: 0,
+                    totalComm: 0
+                };
             }
-            aggregatedItemsMap[item.name].qty += item.qty;[cite: 2]
-            let itemComm = item.price * item.commission * item.qty;[cite: 2]
-            aggregatedItemsMap[item.name].totalComm += itemComm;[cite: 2]
+            aggregatedItemsMap[item.name].qty += item.qty;
+            let itemComm = item.price * item.commission * item.qty;
+            aggregatedItemsMap[item.name].totalComm += itemComm;
 
-            if (!bracketSubtotals[item.bracket]) {[cite: 2]
-                bracketSubtotals[item.bracket] = 0;[cite: 2]
+            if (!bracketSubtotals[item.bracket]) {
+                bracketSubtotals[item.bracket] = 0;
             }
-            bracketSubtotals[item.bracket] += itemComm;[cite: 2]
+            bracketSubtotals[item.bracket] += itemComm;
 
-            grandTotal += itemComm;[cite: 2]
+            grandTotal += itemComm;
         });
     });
 
@@ -332,14 +332,14 @@ function renderAggregatedSummary() {[cite: 2]
                 <span class="item-comm">₱${item.totalComm.toFixed(2)}</span>
             </div>
         </div>
-    `).join('');[cite: 2]
+    `).join('');
 
     let bracketsHtml = Object.keys(bracketSubtotals).map(bracket => `
         <div style="display: flex; justify-content: space-between; font-size: 13px; color: #ffb6c1; margin: 4px 0; font-weight: 600;">
             <span>Subtotal (${bracket}):</span>
             <span>₱${bracketSubtotals[bracket].toFixed(2)}</span>
         </div>
-    `).join('');[cite: 2]
+    `).join('');
 
     container.innerHTML = `
         <div class="receipt-box" id="aggregatedSummaryContent">
@@ -360,42 +360,42 @@ function renderAggregatedSummary() {[cite: 2]
             </div>
             ${brandingFooterHTML}
         </div>
-    `;[cite: 2]
+    `;
 }
 
-function toggleHistoryFold() {[cite: 2]
-    playClickSound();[cite: 2]
-    isHistoryFolded = !isHistoryFolded;[cite: 2]
-    renderHistoryLogs();[cite: 2]
+function toggleHistoryFold() {
+    playClickSound();
+    isHistoryFolded = !isHistoryFolded;
+    renderHistoryLogs();
 }
 
-function deleteHistoryLog(index) {[cite: 2]
-    playClickSound();[cite: 2]
-    if (confirm(`Gusto mo bang burahin ang Log #${index + 1}?`)) {[cite: 2]
-        historyLogs.splice(index, 1);[cite: 2]
-        localStorage.setItem('jessah_history_logs', JSON.stringify(historyLogs));[cite: 2]
-        showToast('Log deleted successfully!');[cite: 2]
-        updateAll();[cite: 2]
+function deleteHistoryLog(index) {
+    playClickSound();
+    if (confirm(`Gusto mo bang burahin ang Log #${index + 1}?`)) {
+        historyLogs.splice(index, 1);
+        localStorage.setItem('jessah_history_logs', JSON.stringify(historyLogs));
+        showToast('Log deleted successfully!');
+        updateAll();
     }
 }
 
-function deleteAllHistoryLogs() {[cite: 2]
-    playClickSound();[cite: 2]
-    if (confirm("Gusto mo bang burahin LAHAT ng history logs? Hindi na ito maibabalik.")) {[cite: 2]
-        historyLogs = [];[cite: 2]
-        localStorage.removeItem('jessah_history_logs');[cite: 2]
-        showToast('All logs deleted successfully!');[cite: 2]
-        updateAll();[cite: 2]
+function deleteAllHistoryLogs() {
+    playClickSound();
+    if (confirm("Gusto mo bang burahin LAHAT ng history logs? Hindi na ito maibabalik.")) {
+        historyLogs = [];
+        localStorage.removeItem('jessah_history_logs');
+        showToast('All logs deleted successfully!');
+        updateAll();
     }
 }
 
-function renderHistoryLogs() {[cite: 2]
-    const container = document.getElementById('historyLogsContainer');[cite: 2]
-    if (!container) return;[cite: 2]
+function renderHistoryLogs() {
+    const container = document.getElementById('historyLogsContainer');
+    if (!container) return;
 
-    if (historyLogs.length === 0) {[cite: 2]
-        container.innerHTML = ``;[cite: 2]
-        return;[cite: 2]
+    if (historyLogs.length === 0) {
+        container.innerHTML = ``;
+        return;
     }
 
     let toggleHeaderHtml = `
@@ -406,21 +406,21 @@ function renderHistoryLogs() {[cite: 2]
             </button>
             <button class="glass-btn glass-btn-danger" style="margin-top:0; flex: 0 0 110px; font-size:12px; padding:8px;" onclick="deleteAllHistoryLogs()">🗑️ Delete All</button>
         </div>
-    `;[cite: 2]
+    `;
 
-    if (isHistoryFolded) {[cite: 2]
-        container.innerHTML = toggleHeaderHtml;[cite: 2]
-        return;[cite: 2]
+    if (isHistoryFolded) {
+        container.innerHTML = toggleHeaderHtml;
+        return;
     }
 
-    let logsHtml = historyLogs.map((log, logIndex) => {[cite: 2]
-        let logBracketSubtotals = {};[cite: 2]
-        log.items.forEach(item => {[cite: 2]
-            let itemComm = item.price * item.commission * item.qty;[cite: 2]
-            if (!logBracketSubtotals[item.bracket]) {[cite: 2]
-                logBracketSubtotals[item.bracket] = 0;[cite: 2]
+    let logsHtml = historyLogs.map((log, logIndex) => {
+        let logBracketSubtotals = {};
+        log.items.forEach(item => {
+            let itemComm = item.price * item.commission * item.qty;
+            if (!logBracketSubtotals[item.bracket]) {
+                logBracketSubtotals[item.bracket] = 0;
             }
-            logBracketSubtotals[item.bracket] += itemComm;[cite: 2]
+            logBracketSubtotals[item.bracket] += itemComm;
         });
 
         let logBracketsHtml = Object.keys(logBracketSubtotals).map(bracket => `
@@ -428,7 +428,7 @@ function renderHistoryLogs() {[cite: 2]
                 <span>Subtotal (${bracket}):</span>
                 <span>₱${logBracketSubtotals[bracket].toFixed(2)}</span>
             </div>
-        `).join('');[cite: 2]
+        `).join('');
 
         return `
             <div class="receipt-box" id="historyLog-${logIndex}" style="margin-bottom: 10px; position: relative;">
@@ -461,17 +461,16 @@ function renderHistoryLogs() {[cite: 2]
                 </div>
                 ${brandingFooterHTML}
             </div>
-        `;[cite: 2]
-    }).join('');[cite: 2]
+        `;
+    }).join('');
 
-    container.innerHTML = toggleHeaderHtml + logsHtml;[cite: 2]
+    container.innerHTML = toggleHeaderHtml + logsHtml;
 }
 
-function downloadBoxAsImage(elementId, label) {[cite: 2]
-    const element = document.getElementById(elementId);[cite: 2]
-    if (!element) return;[cite: 2]
+function downloadBoxAsImage(elementId, label) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
     
-    // Ginagamit ang ignoreElements para hindi na isama sa screenshot ang mga download buttons
     html2canvas(element, {
         backgroundColor: '#120a12',
         scale: 2,
@@ -479,24 +478,24 @@ function downloadBoxAsImage(elementId, label) {[cite: 2]
             return el.classList.contains('glass-btn-download') || el.classList.contains('action-buttons-row');
         }
     }).then(canvas => {
-        const link = document.createElement('a');[cite: 2]
-        link.download = `${label}_${Date.now()}.png`;[cite: 2]
-        link.href = canvas.toDataURL('image/png');[cite: 2]
-        link.click();[cite: 2]
-        showToast(`${label} downloaded as image!`);[cite: 2]
+        const link = document.createElement('a');
+        link.download = `${label}_${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast(`${label} downloaded as image!`);
     }).catch(err => {
-        showToast('Failed to download image.');[cite: 2]
+        showToast('Failed to download image.');
     });
 }
 
-function showToast(message) {[cite: 2]
-    const toast = document.getElementById('toast');[cite: 2]
-    if (!toast) return;[cite: 2]
-    toast.textContent = message;[cite: 2]
-    toast.classList.add('show');[cite: 2]
-    setTimeout(() => {[cite: 2]
-        toast.classList.remove('show');[cite: 2]
-    }, 2000);[cite: 2]
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2000);
 }
 
-window.onload = initApp;[cite: 2]
+window.onload = initApp;
