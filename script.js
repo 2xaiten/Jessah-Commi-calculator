@@ -221,9 +221,9 @@ function renderReceipt() {[cite: 2]
     `).join('');[cite: 2]
 
     const now = new Date();[cite: 2]
-    const currentDateStr = now.toLocaleString('en-US', { [cite: 2]
-        month: 'numeric', day: 'numeric', year: 'numeric', [cite: 2]
-        hour: 'numeric', minute: 'numeric', hour12: true [cite: 2]
+    const currentDateStr = now.toLocaleString('en-US', {[cite: 2]
+        month: 'numeric', day: 'numeric', year: 'numeric',[cite: 2]
+        hour: 'numeric', minute: 'numeric', hour12: true[cite: 2]
     });[cite: 2]
 
     container.innerHTML = `
@@ -256,9 +256,9 @@ function saveCurrentLog() {[cite: 2]
     const techName = document.getElementById('techNameInput')?.value || 'JESSAH';[cite: 2]
     
     const now = new Date();[cite: 2]
-    const timestamp = now.toLocaleString('en-US', { [cite: 2]
-        month: 'numeric', day: 'numeric', year: 'numeric', [cite: 2]
-        hour: 'numeric', minute: 'numeric', hour12: true [cite: 2]
+    const timestamp = now.toLocaleString('en-US', {[cite: 2]
+        month: 'numeric', day: 'numeric', year: 'numeric',[cite: 2]
+        hour: 'numeric', minute: 'numeric', hour12: true[cite: 2]
     });[cite: 2]
 
     let totalComm = activeItems.reduce((sum, item) => sum + (item.price * item.commission * item.qty), 0);[cite: 2]
@@ -471,28 +471,20 @@ function downloadBoxAsImage(elementId, label) {[cite: 2]
     const element = document.getElementById(elementId);[cite: 2]
     if (!element) return;[cite: 2]
     
-    const actionRow = element.querySelector('.action-buttons-row');[cite: 2]
-    if (actionRow) {[cite: 2]
-        actionRow.style.display = 'none';[cite: 2]
-    }
-
-    html2canvas(element, {[cite: 2]
-        backgroundColor: '#120a12',[cite: 2]
-        scale: 2[cite: 2]
-    }).then(canvas => {[cite: 2]
-        if (actionRow) {[cite: 2]
-            actionRow.style.display = 'flex';[cite: 2]
+    // Ginagamit ang ignoreElements para hindi na isama sa screenshot ang mga download buttons
+    html2canvas(element, {
+        backgroundColor: '#120a12',
+        scale: 2,
+        ignoreElements: (el) => {
+            return el.classList.contains('glass-btn-download') || el.classList.contains('action-buttons-row');
         }
-
+    }).then(canvas => {
         const link = document.createElement('a');[cite: 2]
         link.download = `${label}_${Date.now()}.png`;[cite: 2]
         link.href = canvas.toDataURL('image/png');[cite: 2]
         link.click();[cite: 2]
         showToast(`${label} downloaded as image!`);[cite: 2]
-    }).catch(err => {[cite: 2]
-        if (actionRow) {[cite: 2]
-            actionRow.style.display = 'flex';[cite: 2]
-        }
+    }).catch(err => {
         showToast('Failed to download image.');[cite: 2]
     });
 }
