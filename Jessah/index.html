@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commission Calculator - Jessah Nail Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- html2canvas library para sa image download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Commission Calculator</h2>
+
+        <!-- Technician Name Input -->
+        <div class="input-group">
+            <input type="text" id="techNameInput" value="JESSAH" placeholder="Enter Name">
+        </div>
+
+        <div class="instruction-text">
+            ✨ Scroll and click any service to add to your log:
+        </div>
+
+        <!-- Custom Add-On Box -->
+        <div class="addon-box">
+            <strong>Custom Add-On (10% Comm.)</strong>
+            <div class="addon-input-row">
+                <input type="number" id="customPriceInput" placeholder="Enter Price (₱)">
+                <button class="glass-btn addon-btn" onclick="addCustomService()">Add</button>
+            </div>
+        </div>
+
+        <!-- Services Drawer List na may Loading Screen -->
+        <div class="services-drawer" id="servicesListContainer">
+            <div class="loading-container">
+                <div class="spinner-box">
+                    <div class="heart-spinner">💖</div>
+                </div>
+                <div class="loading-text">loading data from Jessah Database... ✨</div>
+            </div>
+        </div>
+
+        <!-- Aggregated Summary Section -->
+        <div class="history-section-title">📊 All-Time / Weekly Aggregated Summary</div>
+        <div id="aggregatedSummaryBox">
+            <!-- Dito lumalabas ang aggregated summary -->
+        </div>
+
+        <!-- Individual History Logs Section -->
+        <div id="historyLogsContainer">
+            <div class="empty-log">No saved logs yet.</div>
+        </div>
+
+        <!-- Active Receipt Box -->
+        <div id="activeReceiptContainer">
+            <!-- Dito lumalabas ang active receipt -->
+        </div>
+
+        <!-- Permanent App Footer Brand -->
+        <div class="app-footer-brand">
+            Powered by : 2xaiten
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Action successful!</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
