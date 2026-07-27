@@ -46,29 +46,38 @@ async function fetchServicesFromSheet() {
     const container = document.getElementById('servicesListContainer');
     if (!container) return;
 
-    container.innerHTML = `
-        <div class="loading-container">
-            <div class="spinner-box">
-                <div class="heart-spinner">💖</div>
-            </div>
-            <div class="loading-text">loading data from Jessah Database... ✨</div>
-        </div>
-    `;
-
     try {
         const response = await fetch(SHEET_API_URL);
         const data = await response.json();
         
-        servicesData = data.map(item => ({
-            category: item.category ? `${item.category} Category` : 'General',
-            name: item.itemName,
-            price: parseFloat(item.price) || 0,
-            bracket: `Bracket ${item.rate}`,
-            commission: parseFloat(item.rate) || 0
-        })).filter(item => item.name);
+        // Flexible Reader: Bumabasa man ito bilang Object o Array
+        servicesData = data.map(item => {
+            let cat, name, price, rate;
+
+            if (Array.isArray(item)) {
+                cat = item[0];
+                name = item[1];
+                price = parseFloat(item[2]) || 0;
+                rate = parseFloat(item[3]) || 0;
+            } else {
+                cat = item.category || item.Category || item[0] || 'General';
+                name = item.itemName || item.ItemName || item.name || item[1] || '';
+                price = parseFloat(item.price || item.Price || item[2]) || 0;
+                rate = parseFloat(item.rate || item.Rate || item[3]) || 0;
+            }
+
+            return {
+                category: cat ? `${cat} Category` : 'General Category',
+                name: name,
+                price: price,
+                bracket: `Bracket ${rate}`,
+                commission: rate
+            };
+        }).filter(item => item.name);
 
         renderServices();
     } catch (error) {
+        console.error("Fetch error:", error);
         container.innerHTML = `<div class="empty-log">Failed to load services from Database.</div>`;
     }
 }
